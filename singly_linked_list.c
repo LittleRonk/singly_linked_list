@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include "singly_linked_list.h"
@@ -149,7 +148,6 @@ bool list_is_empty(const SinglyLinkedList *list)
 ListNode *merge_sort(ListNode *start, ListNode *end, size_t len,
         int (*cmp) (const void *data_1, const void *data_2))
 {
-    //printf("start: %d - stop: %d\n", *((int *) start->data), *((int *) end->data));
     if (len == 1)
         return start;
 
@@ -166,7 +164,6 @@ ListNode *merge_sort(ListNode *start, ListNode *end, size_t len,
     ListNode *new_part = NULL;
     ListNode *cur_node = NULL;
 
-    //printf("l_part: %d - r_part: %d\n", *((int *) l_part->data), *((int *) r_part->data));
     for (int i = 0; i < len; ++i)
     {
         if (l_len == 0)
