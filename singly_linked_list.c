@@ -21,7 +21,7 @@ SinglyLinkedList *list_create(void *(*copy) (const void *data), void (*destroy) 
 
 void list_clear(SinglyLinkedList *list)
 {
-    if (!list)
+    if (!list || list->size == 0)
         return;
 
     ListNode *temp = NULL;
@@ -50,7 +50,7 @@ void list_destroy(SinglyLinkedList *list)
 
 bool list_add(SinglyLinkedList *list, const void *data, size_t index)
 {
-    if (!list || !data)
+    if (!list)
         return false;
 
     if (index > list->size)
@@ -153,72 +153,82 @@ ListNode *merge_sort(ListNode *start, ListNode *end, size_t len,
 
     size_t l_len = len / 2;
     size_t r_len = len - l_len;
-    ListNode *l_end_node = start;
 
+    // Find the final node of the left part and
+    // the first node of the right part.
+    ListNode *l_end_node = start;
     for (int i = 0; i < l_len - 1; ++i)
         l_end_node = l_end_node->next;
     ListNode *r_start_node = l_end_node->next;
 
+    // Recursively sort the left and right parts of the list
     ListNode *l_part = merge_sort(start, l_end_node, l_len, cmp);
     ListNode *r_part = merge_sort(r_start_node, end, r_len, cmp);
-    ListNode *new_part = NULL;
-    ListNode *cur_node = NULL;
 
+    // The start and end node of the sorted list.
+    ListNode *new_list = NULL;
+    ListNode *new_list_end = NULL;
+
+    // Combine the right and left parts
     for (int i = 0; i < len; ++i)
     {
+        // If one part runs out of elements, we simply connect
+        // the other without any extra checks.
         if (l_len == 0)
         {
-            cur_node->next = r_part;
-            cur_node = r_part;
+            new_list_end->next = r_part;
+            new_list_end = r_part;
             r_part = r_part->next;
             continue;
         }
         if (r_len == 0)
         {
-            cur_node->next = l_part;
-            cur_node = l_part;
+            new_list_end->next = l_part;
+            new_list_end = l_part;
             l_part = l_part->next;
             continue;
         }
 
+        // Compare elements from both parts using the cmp function
+        // and add the smaller one to the new sorted list.
         if (cmp(l_part->data, r_part->data) == -1)
         {
             if (i == 0)
             {
-                new_part = r_part;
-                cur_node = new_part;
+                new_list = r_part;
+                new_list_end = new_list;
             }
             else
             {
-                cur_node->next = r_part;
-                cur_node = r_part;
+                new_list_end->next = r_part;
+                new_list_end = r_part;
             }
             --r_len;
             r_part = r_part->next;
         }
-        else if (cmp(l_part->data, r_part->data) >= 0)
+        else
         {
             if (i == 0)
             {
-                new_part = l_part;
-                cur_node = new_part;
+                new_list = l_part;
+                new_list_end = new_list;
             }
             else
             {
-                cur_node->next = l_part;
-                cur_node = l_part;
+                new_list_end->next = l_part;
+                new_list_end = l_part;
             }
             --l_len;
             l_part = l_part->next;
         }
     }
 
-    return new_part;
+    return new_list;
 }
 
 void list_sort(SinglyLinkedList *list, int (*cmp) (const void *data_1, const void *data_2))
 {
-    if (!list || !cmp)
+    if (!list || !cmp || list->size == 0)
         return;
     
     ListNode *end = list->head;
@@ -226,8 +236,10 @@ void list_sort(SinglyLinkedList *list, int (*cmp) (const void *data_1, const voi
         end = end->next;
 
     list->head = merge_sort(list->head, end, list->size, cmp);
+
+    // Set the next pointer of the last element to NULL
     ListNode *tail = list->head;
-    for (int i = 0; i <= list->size; ++i)
+    for (int i = 0; i < list->size - 1; ++i)
         tail = tail->next;
 
     tail->next = NULL;
@@ -235,6 +247,9 @@ void list_sort(SinglyLinkedList *list, int (*cmp) (const void *data_1, const voi
 
 void list_foreach(SinglyLinkedList *list, void (*func) (void *data, void *arg), void *arg)
 {
+    if (!list || !func)
+        return;
+
     ListNode *cur_node = list->head;
     while (cur_node)
     {
