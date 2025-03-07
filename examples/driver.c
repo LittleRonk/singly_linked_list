@@ -70,9 +70,9 @@ int cmp(const void *data_1, const void *data_2)
     int *d_2 = (int *) data_2;
 
     if (*d_1 > *d_2)
-        return -1; // Sort in descending order
+        return 1; // Sort in descending order
     else if (*d_1 < *d_2)
-        return 1;
+        return -1;
     return 0;
 }
 

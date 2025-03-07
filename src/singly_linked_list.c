@@ -1,6 +1,6 @@
 #include <stddef.h>
 #include <stdlib.h>
-#include "singly_linked_list.h"
+#include <singly_linked_list.h>
 
 SinglyLinkedList *list_create(void *(*copy) (const void *data), void (*destroy) (void *data))
 {
@@ -191,7 +191,7 @@ ListNode *merge_sort(ListNode *start, ListNode *end, size_t len,
 
         // Compare elements from both parts using the cmp function
         // and add the smaller one to the new sorted list.
-        if (cmp(l_part->data, r_part->data) == -1)
+        if (cmp(l_part->data, r_part->data) == 1)
         {
             if (i == 0)
             {
